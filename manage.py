@@ -1,10 +1,20 @@
 from flask import Flask
 from redis import StrictRedis
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import CSRFProtect
+from flask_session import  Session
+from flask import  session
+from flask_script import  Manager
+from flask_migrate import MigrateCommand,Migrate
+
+import os,base64
+
+
 #创建app实例
 app=Flask(__name__)
 
-
+#生成秘钥
+# print(base64.b64decode(os.urandom(48)))
 
 # app.config['SQLALCHEMY_DATABASE_URI']="mysql://root:mysql@127.0.0.1:3306/flaskdb"
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
@@ -18,6 +28,13 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     redisip='127.0.0.1'
     redisport=6379
+    SECRET_KEY  = '123'
+    #配置大写Session
+    SESSION_TYPE='redis'
+    SESSION_REDIS=StrictRedis(host=redisip,port=redisport)
+    # SESSION_USE_SIGNER=True
+    PERMANENT_SESSION_LIFETIME=24*60*60
+
 app.config.from_object(Config)
 # SQLAlchemy(app)
 
@@ -25,13 +42,25 @@ db=SQLAlchemy(app)
 #配置redis
 myredis=StrictRedis(host=Config.redisip,port=Config.redisport)
 
+#配置csrf
 
-@app.route('/')
+CSRFProtect(app)
+Session(app)
+mymanager=Manager(app)
+#让迁移时数据库和app关联
+Migrate(app,db)
+#迁移脚本命令添加到脚本管理对象
+
+mymanager.add_command('dbnickname',MigrateCommand)
+
+@app.route('/',methods=['get','post'])
 def index():
-    myredis.set('name','wang')
+    session['userid']=111
+    # myredis.set('name','wang')
     return 'index'
 
 if __name__ == '__main__':
 
-    app.run()
+    # app.run()
+    mymanager.run()
 
