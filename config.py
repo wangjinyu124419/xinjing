@@ -1,3 +1,4 @@
+import logging
 from redis import StrictRedis
 
 
@@ -19,10 +20,13 @@ class Config(object):
 
 class Devconfig(Config):
     DEBUG=True
+    loglevel=logging.DEBUG
 
 
 class Proconfig(Config):
     DEBUG = False
+    loglevel=logging.ERROR
+
 
 dictconfig={
     'dev':Devconfig,
