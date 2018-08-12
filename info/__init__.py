@@ -7,8 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from flask_session import  Session
 from config import Config,dictconfig
-from info.modules.index import blue_index
 db=SQLAlchemy()
+myredis=None #type:# StrictRedis
 def set_log(level):
     # 设置日志的记录等级。
     logging.basicConfig(level=level)  # 调试debug级
@@ -34,12 +34,16 @@ def createapp(config_name):
     # db=SQLAlchemy(app)
     db.init_app(app)
     #配置redis
+    global myredis
     myredis=StrictRedis(host=config_class.redisip,port=config_class.redisport)
 
     #配置csrf
 
     CSRFProtect(app)
     Session(app)
+
     #注册蓝图
+    from info.modules.index import blue_index
+
     app.register_blueprint(blue_index)
     return  app
