@@ -162,6 +162,14 @@ var imageCodeId = ""
 
 // TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
 function generateImageCode() {
+    // 1.生成图片uuid
+
+    imageCodeId=generateUUID();
+    // 2.生成视图函数路由
+    var url='passport/image_code=?'+imageCodeId;
+    // 3.生成的路由传给图片src
+    $('.get_pic_code').attr('src',url);
+    alert(url)
 
 }
 
