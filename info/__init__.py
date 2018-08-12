@@ -40,5 +40,6 @@ def createapp(config_name):
 
     CSRFProtect(app)
     Session(app)
+    #注册蓝图
     app.register_blueprint(blue_index)
     return  app
