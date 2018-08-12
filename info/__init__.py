@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from flask_session import  Session
 from config import Config,dictconfig
-
+from info.modules.index import blue_index
 db=SQLAlchemy()
 def set_log(level):
     # 设置日志的记录等级。
@@ -40,4 +40,5 @@ def createapp(config_name):
 
     CSRFProtect(app)
     Session(app)
+    app.register_blueprint(blue_index)
     return  app
