@@ -8,7 +8,7 @@ app=createapp('dev')
 mymanager=Manager(app)
 #让迁移时数据库和app关联
 Migrate(app,db)
-#
+#https://gitee.com/wangjinyu124419/myflask-1.git
 #迁移脚本命令添加到脚本管理对象
 
 mymanager.add_command('dbnickname',MigrateCommand)
@@ -22,7 +22,7 @@ mymanager.add_command('dbnickname',MigrateCommand)
 #     return 'index'
 
 if __name__ == '__main__':
-
+    print(app.url_map)
     # app.run()
     mymanager.run()
 
