@@ -35,7 +35,7 @@ def createapp(config_name):
     db.init_app(app)
     #配置redis
     global myredis
-    myredis=StrictRedis(host=config_class.redisip,port=config_class.redisport)
+    myredis=StrictRedis(host=config_class.redisip,port=config_class.redisport,decode_responses=True)
 
     #配置csrf
 
