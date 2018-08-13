@@ -169,7 +169,7 @@ function generateImageCode() {
     var url='passport/image_code?CodeId='+imageCodeId;
     // 3.生成的路由传给图片src
     $('.get_pic_code').attr('src',url);
-    alert(url)
+    // alert(url)
 
 }
 
