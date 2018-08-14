@@ -120,6 +120,25 @@ $(function(){
         }
 
         // 发起登录请求
+        var params={
+            'mobile':mobile,
+            'password':password,
+        };
+        $.ajax({
+            url:'/passport/login',
+            type:'post',
+            data:JSON.stringify(params),
+            contentType:'application/json',
+            success:function (response) {
+                if(response.errno=='0'){
+                    alert('登陆成功');
+                    location.reload();
+                }
+                else{
+                    alert(response.errmsg);
+                }
+            }
+        })
     })
 
 
@@ -154,9 +173,38 @@ $(function(){
         }
 
         // 发起注册请求
+        var params={
+            'mobile':mobile,
+            'smscode':smscode,
+            'password':password,
+        }
+        $.ajax({
+            url:'/passport/register',
+            type:'post',
+            data:JSON.stringify(params),
+            contentType:'application/json',
+            success:function (response) {
+                if(response.errno=='0'){
+                    alert('注册成功');
+                    location.reload();
+                }
+                else{
+                    alert(response.errmsg);
+                }
+            }
+        })
 
     })
 })
+
+//TODO 退出登陆函数
+function logout() {
+    $.get('/passport/logout',function (response) {
+        location.reload();
+
+    })
+
+}
 
 var imageCodeId = ""
 
@@ -205,7 +253,21 @@ function sendSMSCode() {
         contentType:'application/json',
         success:function (response) {
             if(response.errno==0){
-                alert('发送短信验证码成功')
+                var num=10
+                var t=setInterval(function () {
+                    if(num==1){
+                        clearInterval(t);
+                        generateImageCode();
+                        $('.get_code').html('点击获取验证码');
+                        $('.get_code').attr('onclick','sendSMSCode();');
+                    }
+                    else{
+                        $('.get_code').html(num+'秒')
+                    }
+                    num-=1
+
+                },1000);
+                // alert('发送短信验证码成功')
             }
             else{
                 alert(response.errmsg)

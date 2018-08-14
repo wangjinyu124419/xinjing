@@ -80,8 +80,25 @@ class User(BaseModel, db.Model):
             "last_login": self.last_login.strftime("%Y-%m-%d %H:%M:%S"),
         }
         return resp_dict
+    @property
+    def password(self):
+        raise AttributeError('不让从这读取')
 
+    @password.setter
+    def password(self, value):
 
+        self.password_hash=generate_password_hash(value)
+
+    # def check_password(self,password):
+    #     return check_password_hash(self.password_hash,password)
+
+    def check_password(self, password):
+        """
+        校验密码
+        :param password: 外界传入的密码明文
+        :return: 如果校验通过，返回True。反之，返回False
+        """
+        return check_password_hash(self.password_hash, password)
 class News(BaseModel, db.Model):
     """新闻"""
     __tablename__ = "info_news"
