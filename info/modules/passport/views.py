@@ -28,7 +28,8 @@ def sms_code():
         return jsonify(errno=response_code.RET.PARAMERR, errmsg='手机号格式错误')
 
     try:
-        severimagecode=myredis.get('ImageCode:' + imageuuid)
+        severimagecode=myredis.get('ImageCode:'+image_code_id)
+        print()
     except Exception as e:
         logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='读取验服务器证码失败')
@@ -45,7 +46,7 @@ def sms_code():
     sms_code='%06d'%random.randint(0,999999)
     logging.debug(sms_code)
     #5.向用户发送验证码
-    result=sendTemplateSMS('mobie', ['sms_code', 5], 1)
+    result=sendTemplateSMS(mobie, [sms_code, 5], 1)
     if result!=0:
         return jsonify(errno=response_code.RET.THIRDERR, errmsg='验证码发送失败')
 
@@ -71,7 +72,7 @@ def imageuuid():
 
     # 4.将imageCodeId和图片验证码文字绑定到redis:图片验证码五分钟之后自动的过期
     try:
-        myredis.set('ImageCode:' + imageuuid, text, constants.IMAGE_CODE_REDIS_EXPIRES)
+        myredis.set('ImageCode:'+imageuuid, text, constants.IMAGE_CODE_REDIS_EXPIRES)
     except Exception as e:
         logging.error(e)
         abort(500)  # 表示服务器错误的
