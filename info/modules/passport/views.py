@@ -62,17 +62,17 @@ def sms_code():
 
 
 @blue_passport.route('/image_code')
-def imageuuid():
-    imageuuid=request.args.get('CodeId')
+def image_code():
+    image_code_id=request.args.get('code_id')
 
-    if not imageuuid:
-        print('参数', imageuuid)
+    if not image_code_id:
+        print('参数', image_code_id)
         abort(400)
     name, text, image = captcha.generate_captcha()
 
     # 4.将imageCodeId和图片验证码文字绑定到redis:图片验证码五分钟之后自动的过期
     try:
-        myredis.set('ImageCode:'+imageuuid, text, constants.IMAGE_CODE_REDIS_EXPIRES)
+        myredis.set('ImageCode:'+image_code_id, text, constants.IMAGE_CODE_REDIS_EXPIRES)
     except Exception as e:
         logging.error(e)
         abort(500)  # 表示服务器错误的

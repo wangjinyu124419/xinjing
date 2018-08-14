@@ -166,7 +166,7 @@ function generateImageCode() {
 
     imageCodeId=generateUUID();
     // 2.生成视图函数路由
-    var url='passport/image_code?CodeId='+imageCodeId;
+    var url='passport/image_code?code_id='+imageCodeId;
     // 3.生成的路由传给图片src
     $('.get_pic_code').attr('src',url);
     // alert(url)
