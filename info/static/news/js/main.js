@@ -129,6 +129,7 @@ $(function(){
             type:'post',
             data:JSON.stringify(params),
             contentType:'application/json',
+            headers:{'X-CSRFToken':getCookie('csrf_token')},
             success:function (response) {
                 if(response.errno=='0'){
                     alert('登陆成功');
@@ -183,6 +184,7 @@ $(function(){
             type:'post',
             data:JSON.stringify(params),
             contentType:'application/json',
+            headers:{'X-CSRFToken':getCookie('csrf_token')},
             success:function (response) {
                 if(response.errno=='0'){
                     alert('注册成功');
@@ -251,9 +253,10 @@ function sendSMSCode() {
         type:'post',
         data:JSON.stringify(params),
         contentType:'application/json',
+        headers:{'X-CSRFToken':getCookie('csrf_token')},
         success:function (response) {
             if(response.errno==0){
-                var num=10
+                var num=20
                 var t=setInterval(function () {
                     if(num==1){
                         clearInterval(t);
