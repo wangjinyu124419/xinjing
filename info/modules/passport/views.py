@@ -10,7 +10,7 @@ from info import constants, db
 from info import myredis,response_code
 from info.libs.yuntongxun.sms import sendTemplateSMS
 from info.models import User
-from info.mytools.captcha.captcha import captcha
+from info.utils.captcha.captcha import captcha
 from . import blue_passport
 @blue_passport.route('/logout')
 #1.清除session保持状态登陆信息

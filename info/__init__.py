@@ -7,6 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect,csrf
 from flask_session import  Session
 from config import Config,dictconfig
+from info.utils.comment import do_rank
+
 db=SQLAlchemy()
 myredis=None #type:# StrictRedis
 def set_log(level):
@@ -46,6 +48,10 @@ def createapp(config_name):
     app.register_blueprint(blue_index)
     from info.modules.passport import blue_passport
     app.register_blueprint(blue_passport)
+    #添加自定义过滤器到过滤器模板列表
+    app.add_template_filter(do_rank,'rank')
+
+
     #每次响应是写入一个cookie,csrf_token
     @app.after_request
     def set_crsf_token(response):

@@ -11,7 +11,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     redisip='127.0.0.1'
     redisport=6379
-    SECRET_KEY  = '123'
+    SECRET_KEY  = '0'
     #配置大写Session
     SESSION_TYPE='redis'
     SESSION_REDIS=StrictRedis(host=redisip,port=redisport)
