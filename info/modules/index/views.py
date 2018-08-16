@@ -1,3 +1,6 @@
+from flask import g
+
+from info.utils.comment import user_login_data
 import logging
 from flask import current_app, jsonify
 from flask import render_template
@@ -12,6 +15,7 @@ from info.models import User, News,Category
 from . import blue_index
 
 @blue_index.route('/news_list')
+@user_login_data
 def index_news_list():
     #1.接受参数,新闻分类id,当前页,每页多少数据
     cid=request.args.get('cid','1')
@@ -51,6 +55,7 @@ def index_news_list():
 
 #创建路由
 @blue_index.route('/')
+@user_login_data
 def index():
     #1.session中读取用户登陆信息
 
@@ -58,15 +63,18 @@ def index():
     #2.查询redis里的用户信息
 
 
-    user=None
-    if user_id:
-        try:
-            user=User.query.get(user_id)
-        except Exception as e:
-            logging.error(e)
+    # user=None
+    # if user_id:
+    #     try:
+    #         user=User.query.get(user_id)
+    #     except Exception as e:
+    #         logging.error(e)
             # return jsonify(errno=response_code.RET.DBERR, errmsg='查询用户失败')
+    # from info.utils.comment import get_use_info
 
-
+    # user=get_use_info()
+    # g.user已经在装饰器总定义好了吧(作为上文存在), 这里只需要读取下文
+    user=g.user
     #3.查询新闻排行
     news_clicks=None
     try:

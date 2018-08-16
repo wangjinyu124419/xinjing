@@ -1,5 +1,6 @@
 import logging
 from logging.handlers import RotatingFileHandler
+# from info.utils.comment import do_rank
 
 from flask import Flask
 from redis import StrictRedis
@@ -7,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect,csrf
 from flask_session import  Session
 from config import Config,dictconfig
-from info.utils.comment import do_rank
+
 
 db=SQLAlchemy()
 myredis=None #type:# StrictRedis
@@ -50,7 +51,8 @@ def createapp(config_name):
     app.register_blueprint(blue_passport)
     from info.modules.news import blue_news
     app.register_blueprint(blue_news)
-
+    #如果导入do_rank 则无法导入db的bug
+    from info.utils.comment import do_rank
     #添加自定义过滤器到过滤器模板列表
     app.add_template_filter(do_rank,'rank')
 
