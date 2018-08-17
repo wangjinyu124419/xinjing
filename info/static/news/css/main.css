@@ -622,6 +622,18 @@ body{
     background:url(../images/collect_icons.png) 21px 7px no-repeat;
     overflow:hidden;
 }
+/*.collected{*/
+    /*display:inline-block;*/
+    /*width:100px;*/
+    /*height:36px;*/
+    /*color:#666;*/
+    /*border-radius:4px;*/
+    /*font-size:14px;*/
+    /*margin:0px 5px;*/
+    /*background:url(../images/collect_icons.png) 15px -73px no-repeat #e6e6e6;*/
+    /*position:relative;*/
+    /*overflow:hidden;*/
+/*}*/
 
 .block-center {
     display: block;
@@ -661,7 +673,8 @@ body{
     color:#666;
     border-radius:4px;
     font-size:14px;
-    margin:0px 5px;
+    /*margin:0px 5px;*/
+    margin:0px auto;
     background:url(../images/collect_icons.png) 15px -73px no-repeat #e6e6e6;
     position:relative;
     overflow:hidden;
@@ -675,17 +688,20 @@ body{
     position:absolute;
     left:40px;
     top:8px;
+
 }
 
 .collected:hover .out{
     left:40px;
     top:35px;
+
 }
 
 .collected .over{
     position:absolute;
     left:40px;
     top:35px;
+
 }
 
 .collected:hover .over{

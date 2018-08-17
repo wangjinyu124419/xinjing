@@ -63,6 +63,6 @@ def createapp(config_name):
         # generate_csrf()生成一个签名的csrf_token,同时保存到session
         csrf_token=csrf.generate_csrf()
         response.set_cookie('csrf_token',csrf_token)
-        print('生成的token:',csrf_token)
+        # print('生成的token:',csrf_token)
         return response
     return  app
