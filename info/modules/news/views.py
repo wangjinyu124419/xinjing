@@ -5,10 +5,73 @@ from flask import request
 from flask import session, jsonify
 from info import constants, db
 from info import response_code
-from info.models import User,  News,Comment
+from info.models import User,  News,Comment, CommentLike
 from info.utils.comment import user_login_data
 from . import blue_news
 from flask import render_template
+
+@blue_news.route('/comment_like',methods=['POST'])
+@user_login_data
+def comment_like():
+    #1.判断用户登陆
+    user=g.user
+    if not user:
+        return jsonify(errno=response_code.RET.SESSIONERR, errmsg='用户未登录')
+
+    #2.接受参数,news_id,comment_id,action
+    json_dict = request.json
+    comment_id = json_dict.get('comment_id')
+    news_id = json_dict.get('news_id')
+    action = json_dict.get('action')
+    #3.校验参数齐全,action范围
+    if not all([comment_id,action]):
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数不全')
+    if action not in ['remove','add']:
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
+
+    #4.查询评论是否存在
+    try:
+        comment=Comment.query.get(comment_id)
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='查询评论失败')
+    if not comment:
+        return jsonify(errno=response_code.RET.DBERR, errmsg='该评论不存在')
+
+
+    #5.更具action实现点赞动作
+    comment_like_mode=None
+    comment_like_mode = CommentLike.query.filter(CommentLike.comment_id == comment.id,
+                                                 CommentLike.user_id == user.id).first()
+
+    if action=='add':
+
+        if not comment_like_mode:
+
+            comment_like_mode=CommentLike()
+            comment_like_mode.user_id=user.id
+            comment_like_mode.comment_id=comment_id
+            comment.like_count+=1
+
+            db.session.add(comment_like_mode)
+    else:
+        if comment_like_mode:
+
+            db.session.delete(comment_like_mode)
+
+    # 6.同步数据库
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='操作失败')
+    # 7.返回会响应
+    return jsonify(errno=response_code.RET.OK, errmsg='操作成功')
+
+
+
+
 
 #新闻评论
 @blue_news.route('/news_comment',methods=['POST'])
@@ -20,6 +83,7 @@ def news_comment():
         return jsonify(errno=response_code.RET.SESSIONERR, errmsg='用户未登录')
 
     #2.接受参数,news_id,comment,parent_id
+
     json_dict=request.json
     news_id=json_dict.get('news_id')
     comment=json_dict.get('comment')
@@ -168,10 +232,21 @@ def news_detail(news_id):
         return jsonify(errno=response_code.RET.DBERR, errmsg='查询新闻评论失败')
     # if not comments:
     #     return jsonify(errno=response_code.RET.DBERR, errmsg='无新闻评论')
+        # 6.查询当前新闻点赞
+        # 查询当前用户对那些评论点了赞
+    comment_likes = CommentLike.query.filter(CommentLike.user_id == user.id).all()
+    comment_like_id = [comment_like.comment_id for comment_like in comment_likes]
+
     comment_dict_list=[]
     for comment in comments:
-        comment.to_dict()
-        comment_dict_list.append(comment.to_dict() )
+        comment_dict=comment.to_dict()
+        comment_dict['is_like']=False
+        if comment.id in comment_like_id:  # 表示该评论当前用户点赞
+            comment_dict['is_like'] = True
+
+        comment_dict_list.append(comment_dict)
+
+
 
     context = {
         'user': user.to_dict() if user else None,
