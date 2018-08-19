@@ -51,6 +51,9 @@ def createapp(config_name):
     app.register_blueprint(blue_passport)
     from info.modules.news import blue_news
     app.register_blueprint(blue_news)
+    from info.modules.user import blue_user
+    app.register_blueprint(blue_user)
+
     #如果导入do_rank 则无法导入db的bug
     from info.utils.comment import do_rank
     #添加自定义过滤器到过滤器模板列表
