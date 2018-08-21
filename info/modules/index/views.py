@@ -36,9 +36,9 @@ def index_news_list():
     #3,进行分页查询,
     try:
         if cid==1:
-            paginates=News.query.order_by(News.create_time.desc()).paginate(page,per_page,False)
+            paginates=News.query.filter(News.status==0).order_by(News.create_time.desc()).paginate(page,per_page,False)
         else:
-            paginates=News.query.filter(News.category_id==cid).paginate(page,per_page,False)
+            paginates=News.query.filter(News.category_id==cid,News.status==0).order_by(News.create_time.desc()).paginate(page,per_page,False)
     except Exception as e:
         return jsonify(errno=response_code.RET.DBERR, errmsg='查询分类新闻失败')
     #4,构造响应数据
@@ -92,6 +92,7 @@ def index():
         'user':user.to_dict() if user else None,
         'news_clicks':news_clicks,
         'news_categories':news_categories
+
     }
     # 响应渲染后的主页
     return render_template('news/index.html',context=context)

@@ -7,7 +7,7 @@ __pycache__/
 *.so
 .idea/
 logs/log*
-
+.qiniu*
 # Distribution / packaging
 .Python
 build/
