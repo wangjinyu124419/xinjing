@@ -10,6 +10,63 @@ from info.utils.comment import user_login_data
 from . import blue_news
 from flask import render_template
 
+@blue_news.route('/followed_user',methods=['GET','POST'])
+@user_login_data
+def followed_user():
+    """关注和取消关注
+    1.判断用户是否登录
+    2.接受参数：user_id, action
+    3.校验参数：判断参数是否齐全，判断action是否在范围内
+    4.使用user_id查询要被关注的用户是否存在
+    5.如果要被关注的用户是存在的，再根据action实现关注和取消关注
+    6.同步数据库
+    7.响应结果
+    """
+    # 1.判断用户是否登录: login_user 关注 other
+    login_user = g.user
+    if not login_user:
+        return jsonify(errno=response_code.RET.SESSIONERR, errmsg='用户未登录')
+
+    # 2.接受参数：user_id, action
+    user_id = request.json.get('user_id')
+    action = request.json.get('action')
+
+    # 3.校验参数：判断参数是否齐全，判断action是否在范围内
+    if not all([user_id, action]):
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg='缺少参数')
+    if action not in ['follow', 'unfollow']:
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
+
+    # 4.使用user_id查询要被关注的用户是否存在：login_user 关注 other
+    try:
+        other = User.query.get(user_id)
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='查询用户数据失败')
+    if not other:
+        return jsonify(errno=response_code.RET.NODATA, errmsg='被关注的用户不存在')
+
+    # 5.如果要被关注的用户是存在的，再根据action实现关注和取消关注 (核心代码)
+    if action == 'follow':
+        # 关注
+        if other not in login_user.followed:
+            login_user.followed.append(other)
+    else:
+        # 取消关注
+        if other in login_user.followed:
+            login_user.followed.remove(other)
+
+    # 6.同步数据到数据库
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='操作失败')
+
+    # 7.响应结果
+    return jsonify(errno=response_code.RET.OK, errmsg='操作成功')
+
 @blue_news.route('/comment_like',methods=['POST'])
 @user_login_data
 def comment_like():
@@ -73,7 +130,7 @@ def comment_like():
 
 
 
-#新闻评论
+#新闻评论关注
 @blue_news.route('/news_comment',methods=['POST'])
 @user_login_data
 def news_comment():
@@ -207,6 +264,7 @@ def news_detail(news_id):
         news_detail=News.query.get(news_id)
     except Exception as e:
         logging.error(e)
+        abort(404)
         #抛出404,将来对404统一处理
     if not news_detail:
         abort(404)
@@ -246,14 +304,19 @@ def news_detail(news_id):
 
         comment_dict_list.append(comment_dict)
 
-
+    #7关注和取消关注
+    is_followed=False
+    if user and news_detail.user:
+        if news_detail.user in user.followed:
+            is_followed = True
 
     context = {
         'user': user.to_dict() if user else None,
         'news_clicks': news_clicks,
         'news_detail':news_detail.to_dict(),
         'is_colletted':is_colletted,
-        'comments':comment_dict_list
+        'comments':comment_dict_list,
+        'is_followed':is_followed,
 
     }
     # context = {

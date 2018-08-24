@@ -13,6 +13,62 @@ from . import blue_user
 from  info.utils.comment import user_login_data
 
 
+
+
+@blue_user.route('/user_follow')
+@user_login_data
+def user_follow():
+    """我关注的用户"""
+
+    # 1.获取登录用户信息
+    user = g.user
+    if not user:
+        # 如果用户未登录，重定向到index蓝图中的index视图
+        return redirect(url_for('index.index'))
+
+    # 2.接受参数
+    page = request.args.get('p', 1)
+
+    # 3.校验参数
+    try:
+        page = int(page)
+    except Exception as e:
+        logging.error(e)
+        page = 1
+
+    # 3.查询登录用户的所关注的用户 (核心代码)
+    # user.followed ： 读取当前登录用户关注的所有人
+    followed_users = []
+    current_page = 1
+    total_page = 1
+    try:
+        paginate = user.followed.paginate(page, constants.USER_FOLLOWED_MAX_COUNT, False)
+        # 获取当前页数据
+        followed_users = paginate.items
+        # 获取当前页
+        current_page = paginate.page
+        # 获取总页数
+        total_page = paginate.pages
+    except Exception as e:
+        logging.error(e)
+
+    # 4.构造渲染数据
+    followed_user_dict_list = []
+    for followed_user in followed_users:
+        followed_user_dict_list.append(followed_user.to_dict())
+
+    context = {
+        "users": followed_user_dict_list,
+        "total_page": total_page,
+        "current_page": current_page
+    }
+
+    # 5.响应结果
+    return render_template('news/user_follow.html', context=context)
+
+
+
+
 # http://127.0.0.1:5000/user/news_list?p=1
 @blue_user.route('/news_list')
 @user_login_data

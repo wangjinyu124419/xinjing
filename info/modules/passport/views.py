@@ -18,6 +18,7 @@ from . import blue_passport
 def logout():
     try:
         session.pop('user_id',None)
+        session.pop('is_admin',False)
     except Exception as e:
         logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='退出登陆失败')
@@ -59,7 +60,8 @@ def login():
         return jsonify(errno=response_code.RET.DBERR, errmsg='保存登陆时间失败')
 
     session['user_id']=user.id
-
+    if user.is_admin:
+        session['is_admin'] = True
     #6.响应登陆结果
 
     return jsonify(errno=response_code.RET.OK, errmsg='登陆成功')

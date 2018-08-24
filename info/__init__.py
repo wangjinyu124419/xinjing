@@ -3,6 +3,8 @@ from logging.handlers import RotatingFileHandler
 # from info.utils.comment import do_rank
 
 from flask import Flask
+from flask import g
+from flask import render_template
 from redis import StrictRedis
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect,csrf
@@ -53,6 +55,9 @@ def createapp(config_name):
     app.register_blueprint(blue_news)
     from info.modules.user import blue_user
     app.register_blueprint(blue_user)
+    from info.modules.admin import blue_admin
+    app.register_blueprint(blue_admin)
+
 
     #如果导入do_rank 则无法导入db的bug
     from info.utils.comment import do_rank
@@ -68,4 +73,11 @@ def createapp(config_name):
         response.set_cookie('csrf_token',csrf_token)
         # print('生成的token:',csrf_token)
         return response
+
+    from info.utils.comment import user_login_data
+    @app.errorhandler(404)
+    @user_login_data
+    def page_notfound(e):
+        context={'user':g.user.to_dict() if g.user else None}
+        return render_template('news/404.html',context=context)
     return  app

@@ -98,20 +98,30 @@
 
         </div>
         <div class="rank_con fr">
-            <div class="author_card">
-                <a href="#" class="author_pic"><img src="../../static/news/images/user_pic.png" alt="author_pic"></a>
-                <a href="#" class="author_name">张大山</a>
-                <div class="author_resume">张大山的简介,张大山</div>
-                <div class="writings"><span>总篇数</span><b>23</b></div>
-                <div class="follows"><span>粉丝</span><b>36</b></div>
-                <a href="javascript:;" class="focus fr">关注</a>
-                <a href="javascript:;" class="focused fr"><span class="out">已关注</span><span class="over">取消关注</span></a>
-            </div>
+                {% if context.news_detail.author  %}
+                    <div class="author_card">
+                        <a href="#" class="author_pic"><img src="{% if context.news_detail.author.avatar_url %}
+                        {{ context.news_detail.author.avatar_url }}
+                        {% else %}
+                        ../../static/news/images/user_pic.png
+                        {% endif %}" alt="author_pic"></a>
+                        <a href="#" class="author_name">{{ context.news_detail.author.nick_name }}</a>
+                        <div class="author_resume">签名：{{ context.news_detail.author.signature }}</div>
+                        <div class="writings"><span>总篇数</span><b>{{ context.news_detail.author.news_count }}</b></div>
+                        <div class="follows"><span>粉丝</span><b>{{ context.news_detail.author.followers_count }}</b></div>
+
+                        <a href="javascript:;" class="focus fr" data-userid="{{ context.news_detail.author.id }}" style="display: {% if context.is_followed %}none{% else %}block{% endif %}">关注</a>
+                        <a href="javascript:;" class="focused fr" data-userid="{{ context.news_detail.author.id }}" style="display: {% if context.is_followed %}block{% else %}none{% endif %}"><span class="out">已关注</span><span class="over">取消关注</span></a>
+
+    {#                    <a href="javascript:;" class="focus fr" data-userid="{{ context.news.author.id }}">关注</a>#}
+    {#                    <a href="javascript:;" class="focused fr" data-userid="{{ context.news.author.id }}"><span class="out">已关注</span><span class="over">取消关注</span></a>#}
+                    </div>
+                {% endif %}
                 <h3>点击排行</h3>
                 </div>
                 <ul class="rank_list">
                     {% for news in context.news_clicks %}
-                     <li><span class={{ loop.index|rank }}>{{ loop.index }}</span><a href="news/detail/{{ news.id }}">{{ news.title }}</a></li>
+                     <li><span class={{ loop.index|rank }}>{{ loop.index }}</span><a href="/{{ news.id }}">{{ news.title }}</a></li>
 
                     {% endfor %}
 
