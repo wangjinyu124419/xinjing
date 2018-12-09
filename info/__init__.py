@@ -10,7 +10,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect,csrf
 from flask_session import  Session
 from config import Config,dictconfig
-
+import pymysql
+pymysql.install_as_MySQLdb()
 
 db=SQLAlchemy()
 myredis=None #type:# StrictRedis

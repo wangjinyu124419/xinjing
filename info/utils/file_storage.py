@@ -1,9 +1,12 @@
 from qiniu import Auth, put_data
 
 
-access_key = 'yV4GmNBLOgQK-1Sn3o4jktGLFdFSrlywR2C-hvsW'
-secret_key = 'bixMURPL6tHjrb8QKVg2tm7n9k8C7vaOeQ4MEoeW'
-bucket_name = 'ihome'
+# access_key = 'yV4GmNBLOgQK-1Sn3o4jktGLFdFSrlywR2C-hvsW'
+access_key = 'TP5UiYvZbDz1KljuFSvvmlqYcl9sKDyICfcy0uiu'
+# secret_key = 'bixMURPL6tHjrb8QKVg2tm7n9k8C7vaOeQ4MEoeW'
+secret_key = 'HHdqrmEFgGkkQaMM_1E2XT1H7u1kXoJ-rNekL5eZ'
+# bucket_name = 'ihome'
+bucket_name = 'storage-wangjinyu'
 
 def upload_file(data):
     """
@@ -21,6 +24,8 @@ def upload_file(data):
     ret, info = put_data(token, None, data)
     # 判断上传是否成功
     if info.status_code != 200:
+        print(info.status_code)
+
         # 如果上传失败就抛出异常
         raise Exception('七牛上传图片失败')
     # 如果上传成功就返回key
